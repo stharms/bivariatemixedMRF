@@ -31,7 +31,7 @@ GaussScore(pps$par[1:3],newys, newzs, nbss,
            ycov, bcovpars=pps$par[4:7], zcov, gcovpars=pps$par[8], pps$par[9])
 
 chickenboots.t2 <- bootstrapbivar(pps$par[1:3], pps$par[4:7], pps$par[8], pps$par[9], newys, newzs, ycov,zcov, k1=31,k2=31, nbrs=nbss,
-                               B=300, M=500)
+                               B=500, M=500, S=10)
 
 
 #bootstrap estimates

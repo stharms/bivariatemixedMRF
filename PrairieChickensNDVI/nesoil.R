@@ -5,7 +5,7 @@ library("foreign")
 library("viridisLite")
 
 
-
+######################
 #overlay code
 #takes a while
 get_CDLoverMU_tables <- function(areasym, mulayer, cdlfile){
@@ -64,8 +64,6 @@ dim(ndvi.neb)
 dim(cdl.corn)
 dim(vci.neb)
 
-#ndvi.neb <- disaggregate(ndvi.neb, c(1452/174,1084/177))
-#crs(ndvi.neb)<- crs(cdl.corn)
 
 #tabulating the CDL data
 count.col <- cdl.neb.dbf %>% filter( !is.na(CLASS_NAME)) %>%
@@ -155,9 +153,6 @@ nesub <- crop(x = newrast,
 #as a data frame for model estimation
 nesubpts <- data.frame(rasterToPoints(nesub, spatial=F))
 head(nesubpts)
-
-
-
 
 ##############################################################
 #code for the plots

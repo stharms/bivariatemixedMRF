@@ -11,7 +11,7 @@ source("ModelwCovs.R")
 
 ##################################################
 ##################################################
-bootstrapbivar <- function(spatials,bmeanpars, gmeanpars, sig2, startys, startzs, bcovt, gcovt, k1, k2, nbrs, B, M){
+bootstrapbivar <- function(spatials,bmeanpars, gmeanpars, sig2, startys, startzs, bcovt, gcovt, k1, k2, nbrs, B, M,S){
   ##Compute bootstrap standard errors 
   ##spatials/bmeanpars/gmeanpars - vector of estimated parameters
   ##startys - arbitrary vector of 0's and 1's
@@ -23,7 +23,7 @@ bootstrapbivar <- function(spatials,bmeanpars, gmeanpars, sig2, startys, startzs
   #colnames(estsfull)<- c("rho","eta.z","eta.y","b0.y","b1.y","b0.z","b1.z","sig.sq")
   ests.zcov<-ests.ycov<-ests.nocov<-estsfull
   bscore <- array(dim=c(M,1,3)); gscore<-bscore
-  S=10
+  #S=10
   
   cntzeros <- NULL
   cnt <- 1
@@ -40,9 +40,11 @@ bootstrapbivar <- function(spatials,bmeanpars, gmeanpars, sig2, startys, startzs
     if(length(ests)>1){
     estsfull[cnt,] <- c(ests$par)
     bscore[cnt,1,]<- brierscore(estsfull[cnt,1:3],newys, newzs, nbss,
-                                bcovt, bcovpars=estsfull[cnt,4:7], gcovt, gcovpars=estsfull[cnt,8], estsfull[cnt,9])
+                                bcovt, bcovpars=estsfull[cnt,4:(4+length(bmeanpars))], gcovt,
+                                gcovpars=estsfull[cnt,(5+length(bmeanpars)):(length(ps)-1)], estsfull[cnt,length(ps)])
     gscore[cnt,1,]<- GaussScore(estsfull[cnt,1:3],newys, newzs, nbss,
-                                bcovt, bcovpars=estsfull[cnt,4:7], gcovt, gcovpars=estsfull[cnt,8], estsfull[cnt,9])
+                                bcovt, bcovpars=estsfull[cnt,4:(4+length(bmeanpars))], gcovt,
+                                gcovpars=estsfull[cnt,(5+length(bmeanpars)):(length(ps)-1)], estsfull[cnt,length(ps)])
     cnt<-cnt+1
     }
     print(paste(cnt-1, "full model"))

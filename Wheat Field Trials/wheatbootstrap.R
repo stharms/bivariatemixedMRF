@@ -127,7 +127,7 @@ xtable(modelests)
 ####################################################################
 ####################################################################
 iout=1
-bootstrapbivar <- function(spatials,bmeanpars, gmeanpars, sig2, startys, startzs, bcovt, gcovt, k1, k2, nbrs, B, M){
+bootstrapbivar <- function(spatials,bmeanpars, gmeanpars, sig2, startys, startzs, bcovt, gcovt, k1, k2, nbrs, B, M, S){
   ##Compute bootstrap standard errors 
   ##spatials/bmeanpars/gmeanpars - vector of estimated parameters
   ##startys - arbitrary vector of 0's and 1's
@@ -143,8 +143,12 @@ bootstrapbivar <- function(spatials,bmeanpars, gmeanpars, sig2, startys, startzs
   cntzeros <- NULL
   cnt <- 1
   newys<-startys; newzs<-startzs
+  dataset <- spatial.genfieldbivar.covs(newys, newzs,nbss,M=B,
+                                        spatials,bmeanpars, gmeanpars, sigmasq=sig2, bcovs=bcovt, gcovs=gcovt)
+  newys <- dataset[,1]
+  newzs <- dataset[,2]
   repeat{
-    dataset <- spatial.genfieldbivar.covs(newys, newzs,nbss,M=B,
+    dataset <- spatial.genfieldbivar.covs(newys, newzs,nbss,M=S,
                                           spatials,bmeanpars, gmeanpars, sigmasq=sig2, bcovs=bcovt, gcovs=gcovt)
     newys <- dataset[,1]
     newzs <- dataset[,2]
@@ -153,9 +157,11 @@ bootstrapbivar <- function(spatials,bmeanpars, gmeanpars, sig2, startys, startzs
                       zs=newzs, bcovs=bcovt,gcovs=gcovt, nbrs=nbss,hessian=T,control=list(maxit=1000))
     estsfull[cnt,] <- c(ests$par)
     bscore[cnt,1,]<- brierscore(estsfull[cnt,1:3],newys, newzs, nbss,
-                                bcovt, bcovpars=estsfull[cnt,4:5], gcovt, gcovpars=estsfull[cnt,6:7], estsfull[cnt,8])
+                                bcovt, bcovpars=estsfull[cnt,4:(4+length(bmeanpars))], gcovt,
+                                gcovpars=estsfull[cnt,(5+length(bmeanpars)):(length(ps)-1)], estsfull[cnt,length(ps)])
     gscore[cnt,1,]<- GaussScore(estsfull[cnt,1:3],newys, newzs, nbss,
-                                bcovt, bcovpars=estsfull[cnt,4:5], gcovt, gcovpars=estsfull[cnt,6:7], estsfull[cnt,8])
+                                bcovt, bcovpars=estsfull[cnt,4:(4+length(bmeanpars))], gcovt,
+                                gcovpars=estsfull[cnt,(5+length(bmeanpars)):(length(ps)-1)], estsfull[cnt,length(ps)])
     cnt<-cnt+1
     print(paste(cnt-1, "full model"))
     if(cnt==(M+1)){break}
